@@ -1,6 +1,6 @@
 #include "pajaro.h"
 
-Pajaro::Pajaro(QObject *parent, int altura) : QObject(parent), QImage(30, 20, QImage::Format_ARGB32),
+Pajaro::Pajaro(QObject *parent, int altura) : QObject(parent), QImage(50, 30, QImage::Format_ARGB32),
     posX(800), posY(altura) {
     fill(Qt::transparent);
     timer = new QTimer(this);

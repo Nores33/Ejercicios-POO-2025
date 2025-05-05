@@ -144,7 +144,6 @@ void MainWindow::actualizarJuego() {
         }
     }
 
-    velocidad += 0.001;
     update();
 }
 

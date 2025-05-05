@@ -1,52 +1,65 @@
 #include "admindb.h"
-#include <QDebug>
 #include <QSqlQuery>
-#include <QSqlRecord>
+#include <QSqlError>
+#include <QVariant>
+#include <QDebug>
+#include <QCryptographicHash>
 
-AdminDB::AdminDB( QObject * parent ) : QObject( parent )  {
-    qDebug() << "Drivers disponibles:" << QSqlDatabase::drivers();
+// Inicialización del puntero estático
+AdminDB *AdminDB::instancia = nullptr;
 
-    db = QSqlDatabase::addDatabase( "QSQLITE" );
+AdminDB::AdminDB() {
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("usuarios.db");
 }
 
-AdminDB::~AdminDB()  {
-    if ( db.isOpen() )
-        db.close();
-}
-
-bool AdminDB::conectar( QString archivoSqlite )  {
-    db.setDatabaseName( archivoSqlite );
-
-    return db.open();
-}
-
-QSqlDatabase AdminDB::getDB()  {
-    return db;
-}
-
-bool AdminDB::isConnected()  {
-    return db.isOpen();
-}
-
-void AdminDB::mostrarTabla( QString tabla )  {
-    if ( this->isConnected() )  {
-        QSqlQuery query = db.exec( "SELECT * FROM " + tabla );
-
-        if ( query.size() == 0 || query.size() == -1 )
-            qDebug() << "La consulta no trajo registros";
-
-        while( query.next() )  {
-            QSqlRecord registro = query.record();  // Devuelve un objeto que maneja un registro (linea, row)
-            int campos = registro.count();  // Devuleve la cantidad de campos de este registro
-
-            QString informacion;  // En este QString se va armando la cadena para mostrar cada registro
-            for ( int i = 0 ; i < campos ; i++ )  {
-                informacion += registro.fieldName( i ) + ":";  // Devuelve el nombre del campo
-                informacion += registro.value( i ).toString() + " - ";
-            }
-            qDebug() << informacion;
-        }
+AdminDB *AdminDB::getInstancia() {
+    if (instancia == nullptr) {
+        instancia = new AdminDB();
     }
-    else
-        qDebug() << "No se encuentra conectado a la base";
+    return instancia;
+}
+
+void AdminDB::conectar() {
+    if (!db.open()) {
+        qDebug() << "Error al conectar con la base de datos:" << db.lastError().text();
+    } else {
+        QSqlQuery query;
+        query.exec("CREATE TABLE IF NOT EXISTS usuarios ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "username TEXT NOT NULL UNIQUE,"
+                   "password TEXT NOT NULL)");
+
+        query.exec("CREATE TABLE IF NOT EXISTS configuracion ("
+                   "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                   "ultimo_usuario TEXT)");
+    }
+}
+
+bool AdminDB::validarUsuario(const QString &username, const QString &password) {
+    QSqlQuery query;
+    query.prepare("SELECT password_md5 FROM usuarios WHERE username = :username");
+    query.bindValue(":username", username);
+
+    if (query.exec() && query.next()) {
+        QString storedPassword = query.value(0).toString();
+        QString hashedPassword = QString(QCryptographicHash::hash(password.toUtf8(), QCryptographicHash::Md5).toHex());
+        return storedPassword == hashedPassword;
+    }
+    return false;
+}
+
+void AdminDB::guardarUltimoUsuario(const QString &username) {
+    QSqlQuery query;
+    query.prepare("INSERT OR REPLACE INTO configuracion (id, ultimo_usuario) VALUES (1, :username)");
+    query.bindValue(":username", username);
+    query.exec();
+}
+
+QString AdminDB::leerUltimoUsuario() {
+    QSqlQuery query("SELECT ultimo_usuario FROM configuracion WHERE id = 1");
+    if (query.exec() && query.next()) {
+        return query.value(0).toString();
+    }
+    return QString();
 }

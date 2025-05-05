@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "admindb.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +17,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+    void onLoginClicked();
+    void onCancelClicked();
 
 private:
     Ui::MainWindow *ui;
