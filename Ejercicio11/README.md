@@ -6,4 +6,4 @@ Ejercicio 11:
 - Subirla a Youtube como No listado
 - El video referencia es: `Login con QtDesigner 2025 <https://youtu.be/9Z208vj-jCw>`_
 
-Link video: proximamente...
+Link video: [https://youtu.be/O3Ef6tw8-nc](https://youtu.be/O3Ef6tw8-nc)

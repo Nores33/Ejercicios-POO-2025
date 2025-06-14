@@ -8,4 +8,4 @@ Ejercicio 9:
 - El video del estudiante deberá quedar en su canal de Youtube con No listado.
 - El video es `Primer aplicación con network 2025 <https://youtu.be/yQKcYThLkmo>`_
 
-Link video: proximamente...
+Link video: [https://youtu.be/KHGbvqZnp0A](https://youtu.be/KHGbvqZnp0A)

@@ -6,4 +6,4 @@ Ejercicio 10:
 - Subirla a Youtube como No listado
 - El video referencia es: `Login en empty project 2025 <https://youtu.be/Gdo6NcdOuPo>`_
 
-Link video: proximamente...
+Link video: [https://youtu.be/aqmITdqcBu8](https://youtu.be/aqmITdqcBu8)
